@@ -6,3 +6,6 @@ flask
 dash
 python-dotenv
 matplotlib
+numpy
+scipy
+matplotlib
