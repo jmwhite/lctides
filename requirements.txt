@@ -1,0 +1,8 @@
+pandas
+plotly
+requests
+psycopg2-binary
+flask
+dash
+python-dotenv
+matplotlib

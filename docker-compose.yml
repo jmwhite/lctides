@@ -1,0 +1,31 @@
+#version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: plotly-dashboard
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/mydatabase
+    ports:
+      - "8050:8050"
+      - "8888:8888"  # Map Jupyter port to host
+
+    volumes:
+      - ./app:/app
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    driver: local
