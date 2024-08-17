@@ -85,13 +85,13 @@ def fetch_hydro_view_data(vh_data_url, start_time, location_id, access_token):
     result = cursor.fetchone()
 
     # Check if the result is None or contains a NULL value, and use the default timestamp if so
-    latest_timestamp = result[0]+1 if result[0] is not None else start_time
+    latest_timestamp = result[0]+1 if result[0] is not None else start_time # type: ignore
 
     print(f"The latest timestamp in the database is: {latest_timestamp}")
 
     # Define the URL
     url = vh_data_url.format(location_id=location_id)
-    authorization = "Bearer {access_token}".format(access_token=access_token) 
+    authorization = "Bearer {access_token}".format(access_token=access_token)
 
     # Define the query parameters
     params = {
@@ -147,7 +147,7 @@ def fetch_usgs_data(usgs_data_url, start_time):
     cursor.execute("SELECT MAX(datetime) FROM usgs_readings;")
     result = cursor.fetchone()
     # Check if the result is None or contains a NULL value, and use the default timestamp if so
-    latest_timestamp = result[0]  if result[0] is not None else datetime.utcfromtimestamp(int(start_time))
+    latest_timestamp = result[0]  if result[0] is not None else datetime.utcfromtimestamp(int(start_time)) # type: ignore
 
     latest_timestamp = latest_timestamp + timedelta(seconds=1)
     start_time_str = latest_timestamp.strftime('%Y-%m-%dT%H:%MZ') 
@@ -172,7 +172,6 @@ def fetch_usgs_data(usgs_data_url, start_time):
     # Check the response status
     if response.status_code == 200:
         data = response.json()  # Parse the JSON response
-        print(data)  # or process the data as needed
     else:
         print(f"Error: {response.status_code}")
 
@@ -230,7 +229,7 @@ def process_and_store_noaa_data(data):
         prediction_time = datetime.strptime(prediction['t'], '%Y-%m-%d %H:%M')
         value = float(prediction['v'])
         tide_type = prediction['type']
-        
+
         cursor.execute(insert_query, (prediction_time, value, tide_type))
 
     # Commit the transaction and close the connection
