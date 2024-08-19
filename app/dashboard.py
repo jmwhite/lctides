@@ -2,39 +2,12 @@
 import dash
 from dash import dcc, html
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-import psycopg2
+from utilities import get_usgs_data_between_dates, get_noaa_tide_predictions, get_data_between_timestamps
 
-def get_data_between_timestamps(start_timestamp, end_timestamp):
-    # Connect to your PostgreSQL database
-    conn = psycopg2.connect("dbname=mydatabase user=postgres password=postgres host=db")
-    cursor = conn.cursor()
-
-    # SQL query to select data between two timestamps
-    query = """
-    SELECT location_id, parameter_id, unit_id, custom_parameter, timestamp, value
-    FROM locations
-    WHERE timestamp BETWEEN %s AND %s
-    ORDER BY timestamp ASC;
-    """
-    cursor.execute(query, (start_timestamp, end_timestamp))
-    
-    # Fetch all the records
-    records = cursor.fetchall()
-
-    # Define column names for the DataFrame
-    column_names = ['location_id', 'parameter_id', 'unit_id', 'custom_parameter', 'timestamp', 'value']
-
-    # Create the DataFrame
-    df = pd.DataFrame(records, columns=column_names)
-
-    # Close the cursor and connection
-    cursor.close()
-    conn.close()
-
-    return df
 
 # Sample DataFrame with random time series data for demonstration
 def create_sample_dataframe():
