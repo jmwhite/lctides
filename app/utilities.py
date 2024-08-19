@@ -153,10 +153,12 @@ def get_noaa_tide_predictions(start_time, end_time):
 
     # Create a pandas DataFrame from the fetched data
     df = pd.DataFrame(rows, columns=column_names)
-    # Add a new column 'prediction_time_est' which is 'prediction_time' minus 7 hours
-    # this entire thing need to handle time zone and daylight savings time
-    df['prediction_time_est'] = df['prediction_time'] - timedelta(hours=7) # type: ignore
-
+    
+    # Add a new column 'prediction_time_est' which is in America/Los_Angeles
+    
+    df['prediction_time'] = df['prediction_time'].dt.tz_localize('UTC')
+    df['prediction_time_est'] = df['prediction_time'].dt.tz_convert('America/Los_Angeles')
+    
     # Close the cursor and connection
     cursor.close()
     conn.close()
