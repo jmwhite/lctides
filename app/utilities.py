@@ -19,7 +19,7 @@ def get_data_between_timestamps(start_timestamp, end_timestamp):
     ORDER BY timestamp ASC;
     """
     cursor.execute(query, (start_timestamp, end_timestamp))
-    
+
     # Fetch all the records
     records = cursor.fetchall()
 
@@ -112,7 +112,7 @@ def get_usgs_data_between_dates(start_datetime, end_datetime):
     WHERE datetime BETWEEN %s AND %s
     ORDER BY datetime ASC;
     """
-    
+
     # Execute the query and fetch the data
     cursor.execute(query, (start_datetime, end_datetime))
     records = cursor.fetchall()
@@ -154,8 +154,8 @@ def get_noaa_tide_predictions(start_time, end_time):
     # Create a pandas DataFrame from the fetched data
     df = pd.DataFrame(rows, columns=column_names)
     # Add a new column 'prediction_time_est' which is 'prediction_time' minus 7 hours
-    # this entire thig need to handle time zone and daylight savings time
-    df['prediction_time_est'] = df['prediction_time'] - timedelta(hours=7)
+    # this entire thing need to handle time zone and daylight savings time
+    df['prediction_time_est'] = df['prediction_time'] - timedelta(hours=7) # type: ignore
 
     # Close the cursor and connection
     cursor.close()
