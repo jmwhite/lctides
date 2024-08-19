@@ -81,7 +81,7 @@ def get_data_between_timestamps(start_timestamp, end_timestamp):
     16: "Baro",
     33: "Battery Level",
     }
-    
+
     # Map the parameter_id to the parameter name
     df['parameter_id'] = df['parameter_id'].astype(int)
     df['parameter'] = df['parameter_id'].map(parameter_mapping)
@@ -96,5 +96,69 @@ def get_data_between_timestamps(start_timestamp, end_timestamp):
     df['date'] = df['date_utc'].dt.tz_convert('America/Los_Angeles')
 
     df = df.sort_values(by='timestamp')
+
+    return df
+
+def get_usgs_data_between_dates(start_datetime, end_datetime):
+    # Connect to your PostgreSQL database
+    # Connect to your PostgreSQL database
+    conn = psycopg2.connect("dbname=mydatabase user=postgres password=postgres host=db")
+    cursor = conn.cursor()
+
+    # SQL query to fetch data between the specified datetime values
+    query = """
+    SELECT site_code, site_name, latitude, longitude, variable_code, variable_name, unit_code, datetime, value, qualifier
+    FROM usgs_readings
+    WHERE datetime BETWEEN %s AND %s
+    ORDER BY datetime ASC;
+    """
     
+    # Execute the query and fetch the data
+    cursor.execute(query, (start_datetime, end_datetime))
+    records = cursor.fetchall()
+
+    # Define the column names for the DataFrame
+    column_names = ['site_code', 'site_name', 'latitude', 'longitude', 'variable_code', 'variable_name', 'unit_code', 'datetime', 'value', 'qualifier']
+
+    # Create the DataFrame
+    df = pd.DataFrame(records, columns=column_names)
+
+    # Close the cursor and connection
+    cursor.close()
+    conn.close()
+
+    return df
+
+def get_noaa_tide_predictions(start_time, end_time):
+    # Connect to your PostgreSQL database
+    conn = psycopg2.connect("dbname=mydatabase user=postgres password=postgres host=db")
+    cursor = conn.cursor()
+
+    # SQL query to fetch data between start_time and end_time
+    query = """
+    SELECT prediction_time, value, type
+    FROM noaa_tide_predictions
+    WHERE prediction_time BETWEEN %s AND %s
+    ORDER BY prediction_time ASC;
+    """
+
+    # Execute the query with the provided start_time and end_time
+    cursor.execute(query, (start_time, end_time))
+
+    # Fetch all rows from the query result
+    rows = cursor.fetchall()
+
+    # Define column names for the DataFrame
+    column_names = ['prediction_time', 'value', 'type']
+
+    # Create a pandas DataFrame from the fetched data
+    df = pd.DataFrame(rows, columns=column_names)
+    # Add a new column 'prediction_time_est' which is 'prediction_time' minus 7 hours
+    # this entire thig need to handle time zone and daylight savings time
+    df['prediction_time_est'] = df['prediction_time'] - timedelta(hours=7)
+
+    # Close the cursor and connection
+    cursor.close()
+    conn.close()
+
     return df
