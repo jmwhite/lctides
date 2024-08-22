@@ -158,7 +158,7 @@ def get_noaa_tide_predictions(start_time, end_time):
     
     df['prediction_time'] = df['prediction_time'].dt.tz_localize('UTC')
     df['prediction_time_est'] = df['prediction_time'].dt.tz_convert('America/Los_Angeles')
-    
+    df['unix_timestamp'] = df['prediction_time_est'].apply(lambda x: int(x.timestamp()))
     # Close the cursor and connection
     cursor.close()
     conn.close()
