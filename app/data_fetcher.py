@@ -87,7 +87,7 @@ def fetch_hydro_view_data(vh_data_url, start_time, location_id, access_token):
     # Check if the result is None or contains a NULL value, and use the default timestamp if so
     latest_timestamp = result[0]+1 if result[0] is not None else start_time # type: ignore
 
-    print(f"The latest timestamp in the database is: {latest_timestamp}")
+    print(f"The latest timestamp in the hydro database is: {latest_timestamp}")
 
     # Define the URL
     url = vh_data_url.format(location_id=location_id)
@@ -175,7 +175,7 @@ def fetch_usgs_data(usgs_data_url, start_time):
     else:
         print(f"Error: {response.status_code}")
 
-    print(f"The latest timestamp in the database is: {latest_timestamp}")
+    print(f"The latest timestamp in the usg database is: {latest_timestamp}")
     return data
 
 def process_and_store_usgs_data(data):
